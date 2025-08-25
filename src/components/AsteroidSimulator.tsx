@@ -58,100 +58,102 @@ export default function AsteroidSimulator() {
   const pos = impactPoint as [number, number];
 
   return (
-    <div className="row">
-      {/* Controles */}
-      <div className="col-md-3">
-        <h4>Asteroid Parameters</h4>
+    <div className="container-fluid">
+      <div className="row flex-column-reverse flex-md-row">
+        {/* Controles */}
+        <div className="col-12 col-md-3 mb-3">
+          <h4>Asteroid Parameters</h4>
 
-        <label>Diameter (m): {diameter}</label>
-        <input
-          type="range"
-          min={10}
-          max={1000}
-          step={10}
-          className="form-range"
-          value={diameter}
-          onChange={(e) => setDiameter(Number(e.target.value))}
-        />
+          <label>Diameter (m): {diameter}</label>
+          <input
+            type="range"
+            min={10}
+            max={1000}
+            step={10}
+            className="form-range"
+            value={diameter}
+            onChange={(e) => setDiameter(Number(e.target.value))}
+          />
 
-        <label>Velocity (m/s): {velocity}</label>
-        <input
-          type="range"
-          min={11000}
-          max={30000}
-          step={1000}
-          className="form-range"
-          value={velocity}
-          onChange={(e) => setVelocity(Number(e.target.value))}
-        />
+          <label>Velocity (m/s): {velocity}</label>
+          <input
+            type="range"
+            min={11000}
+            max={30000}
+            step={1000}
+            className="form-range"
+            value={velocity}
+            onChange={(e) => setVelocity(Number(e.target.value))}
+          />
 
-        <label>Angle (°): {angle}</label>
-        <input
-          type="range"
-          min={10}
-          max={90}
-          step={1}
-          className="form-range"
-          value={angle}
-          onChange={(e) => setAngle(Number(e.target.value))}
-        />
+          <label>Angle (°): {angle}</label>
+          <input
+            type="range"
+            min={10}
+            max={90}
+            step={1}
+            className="form-range"
+            value={angle}
+            onChange={(e) => setAngle(Number(e.target.value))}
+          />
 
-        <div className="mt-3 p-2 border bg-light">
-          <p>Energy: {impact.energyMt.toFixed(2)} Mt TNT</p>
-          <p>Crater: {impact.craterDiameterKm.toFixed(2)} km</p>
-          <p>Radius 1 psi: {(impact.radiiOverpressure.p1psi / 1000).toFixed(1)} km</p>
-          <p>Radius 3 psi: {(impact.radiiOverpressure.p3psi / 1000).toFixed(1)} km</p>
-          <p>Radius 5 psi: {(impact.radiiOverpressure.p5psi / 1000).toFixed(1)} km</p>
-          <p>Radius 20 psi: {(impact.radiiOverpressure.p20psi / 1000).toFixed(1)} km</p>
+          <div className="mt-3 p-2 border bg-light">
+            <p>Energy: {impact.energyMt.toFixed(2)} Mt TNT</p>
+            <p>Crater: {impact.craterDiameterKm.toFixed(2)} km</p>
+            <p>Radius 1 psi: {(impact.radiiOverpressure.p1psi / 1000).toFixed(1)} km</p>
+            <p>Radius 3 psi: {(impact.radiiOverpressure.p3psi / 1000).toFixed(1)} km</p>
+            <p>Radius 5 psi: {(impact.radiiOverpressure.p5psi / 1000).toFixed(1)} km</p>
+            <p>Radius 20 psi: {(impact.radiiOverpressure.p20psi / 1000).toFixed(1)} km</p>
+          </div>
+
+          <p className="text-muted mt-2">Click on the map to set impact location.</p>
         </div>
 
-        <p className="text-muted mt-2">Click on the map to set impact location.</p>
-      </div>
+        {/* Mapa */}
+        <div className="col-12 col-md-9" style={{ height: "70vh", minHeight: "400px" }}>
+          <MapContainer
+            center={impactPoint || [0, 0] as [number, number]}
+            zoom={2}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <LocationMarker setImpactPoint={setImpactPoint} />
 
-      {/* Mapa */}
-      <div className="col-md-9" style={{ height: "80vh" }}>
-        <MapContainer
-          center={impactPoint || [0, 0] as [number, number]}
-          zoom={2}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          <LocationMarker setImpactPoint={setImpactPoint} />
+            {impactPoint && (
+              <>
+                <Marker position={pos}>
+                  <Popup>Impact Location</Popup>
+                </Marker>
 
-          {impactPoint && (
-            <>
-              <Marker position={pos}>
-                <Popup>Impact Location</Popup>
-              </Marker>
-
-              <LeafletCircle
-                center={pos}
-                radius={impact.craterDiameterKm * 500} // metros
-                pathOptions={{ color: "black", fillOpacity: 0.2 }}
-              />
-              <LeafletCircle
-                center={pos}
-                radius={impact.radiiOverpressure.p1psi}
-                pathOptions={{ color: "blue", fillOpacity: 0.1 }}
-              />
-              <LeafletCircle
-                center={pos}
-                radius={impact.radiiOverpressure.p3psi}
-                pathOptions={{ color: "green", fillOpacity: 0.15 }}
-              />
-              <LeafletCircle
-                center={pos}
-                radius={impact.radiiOverpressure.p5psi}
-                pathOptions={{ color: "orange", fillOpacity: 0.2 }}
-              />
-              <LeafletCircle
-                center={pos}
-                radius={impact.radiiOverpressure.p20psi}
-                pathOptions={{ color: "red", fillOpacity: 0.25 }}
-              />
-            </>
-          )}
-        </MapContainer>
+                <LeafletCircle
+                  center={pos}
+                  radius={impact.craterDiameterKm * 500}
+                  pathOptions={{ color: "black", fillOpacity: 0.2 }}
+                />
+                <LeafletCircle
+                  center={pos}
+                  radius={impact.radiiOverpressure.p1psi}
+                  pathOptions={{ color: "blue", fillOpacity: 0.1 }}
+                />
+                <LeafletCircle
+                  center={pos}
+                  radius={impact.radiiOverpressure.p3psi}
+                  pathOptions={{ color: "green", fillOpacity: 0.15 }}
+                />
+                <LeafletCircle
+                  center={pos}
+                  radius={impact.radiiOverpressure.p5psi}
+                  pathOptions={{ color: "orange", fillOpacity: 0.2 }}
+                />
+                <LeafletCircle
+                  center={pos}
+                  radius={impact.radiiOverpressure.p20psi}
+                  pathOptions={{ color: "red", fillOpacity: 0.25 }}
+                />
+              </>
+            )}
+          </MapContainer>
+        </div>
       </div>
     </div>
   );
