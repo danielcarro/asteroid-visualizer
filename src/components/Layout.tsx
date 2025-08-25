@@ -24,8 +24,7 @@ function Layout() {
               <div className="position-absolute bg-white text-dark p-3 shadow rounded mt-2" style={{ right: 10, zIndex: 1050 }}>
                 <nav className="nav flex-column">
                   <Link className="nav-link" to="/" onClick={() => setMenuOpen(false)}>🏠 Home</Link>
-                  <Link className="nav-link" to="/simulator" onClick={() => setMenuOpen(false)}>🪐 Simulator</Link>
-                  <Link className="nav-link" to="/dashboard" onClick={() => setMenuOpen(false)}>📊 Dashboard</Link>
+                  <Link className="nav-link" to="/simulator" onClick={() => setMenuOpen(false)}>🪐 Simulator</Link>                  
                   <Link className="nav-link" to="/about" onClick={() => setMenuOpen(false)}>ℹ️ About</Link>
                 </nav>
               </div>
@@ -39,8 +38,7 @@ function Layout() {
         <aside className="bg-light p-3 d-none d-md-block" style={{ width: 220 }}>
           <nav className="nav flex-column">
             <Link className="nav-link" to="/">🏠 Home</Link>
-            <Link className="nav-link" to="/simulator">🪐 Simulator</Link>
-            <Link className="nav-link" to="/dashboard">📊 Dashboard</Link>
+            <Link className="nav-link" to="/simulator">🪐 Simulator</Link>            
             <Link className="nav-link" to="/about">ℹ️ About</Link>
           </nav>
         </aside>

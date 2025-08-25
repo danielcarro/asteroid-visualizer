@@ -12,10 +12,7 @@ function Home() {
         <div className="mt-4 d-flex flex-column flex-md-row justify-content-center gap-3">
           <Link to="/simulator" className="btn btn-primary btn-lg">
             🪐 Go to Simulator
-          </Link>
-          <Link to="/dashboard" className="btn btn-outline-primary btn-lg">
-            📊 View Dashboard
-          </Link>
+          </Link>          
         </div>
 
         <p className="text-muted mt-4">

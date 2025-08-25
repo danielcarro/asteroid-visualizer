@@ -1,12 +1,12 @@
 import AsteroidSimulator from "../components/AsteroidSimulator";
 
-function Dashboard() {
+function Simulator() {
   return (
     <div>
-      <h2>📊 Dashboard</h2>
+      <h2>🪐 Simulator</h2>
       <AsteroidSimulator />
     </div>
   );
 }
 
-export default Dashboard;
+export default Simulator;

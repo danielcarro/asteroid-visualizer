@@ -1,16 +1,17 @@
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
+import Simulator from "./pages/Simulator";
+import About from "./pages/About";
+
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="about" element={<About />} />   
+        <Route path="simulator" element={<Simulator />} />      
       </Route>
     </Routes>
   );
