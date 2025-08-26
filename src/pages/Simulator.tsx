@@ -1,10 +1,16 @@
 import AsteroidSimulator from "../components/AsteroidSimulator";
 
-function Simulator() {
+interface SimulatorProps {
+  darkMode: boolean;
+}
+
+function Simulator({ darkMode }: SimulatorProps) {
   return (
-    <div>
-      <h2>🪐 Simulator</h2>
-      <AsteroidSimulator />
+    <div className={darkMode ? "bg-dark text-light min-vh-100 p-4" : "bg-light text-dark min-vh-100 p-4"}>
+      <h2 className="mb-4">
+        <i className="bi bi-rocket-fill me-2"></i>Simulator
+      </h2>
+      <AsteroidSimulator darkMode={darkMode} />
     </div>
   );
 }

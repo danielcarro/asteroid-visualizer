@@ -1,55 +1,44 @@
-import { useState } from "react";
 import { Outlet, Link } from "react-router-dom";
+import { Navbar, Nav, Container, Button } from "react-bootstrap";
 
-function Layout() {
-  const [menuOpen, setMenuOpen] = useState(false);
+interface LayoutProps {
+  darkMode: boolean;
+  setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function Layout({ darkMode, setDarkMode }: LayoutProps) {
+  const navbarVariant = darkMode ? "dark" : "light";
+  const navbarBg = darkMode ? "dark" : "light";
 
   return (
-    <div className="d-flex flex-column min-vh-100">
-      {/* Header */}
-      <header className="bg-primary text-white p-2">
-        <div className="container d-flex justify-content-between align-items-center">
-          <h1 className="h5 m-0">NASA Asteroid Simulator</h1>
+    <div className={darkMode ? "bg-dark text-white min-vh-100" : "bg-light text-dark min-vh-100"}>
+      <Navbar collapseOnSelect expand="lg" bg={navbarBg} variant={navbarVariant} className="border-bottom">
+        <Container fluid>
+          <Navbar.Brand as={Link} to="/" className="fw-bold">
+            NASA Asteroid Simulator
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="ms-auto align-items-lg-center">
+              <Nav.Link as={Link} to="/">Home</Nav.Link>
+              <Nav.Link as={Link} to="/about">About</Nav.Link>
+              <Nav.Link as={Link} to="/simulator">Simulator</Nav.Link>
+              <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>
+              <Button
+                variant={darkMode ? "secondary" : "dark"}
+                className="ms-lg-3 mt-2 mt-lg-0"
+                onClick={() => setDarkMode(!darkMode)}
+              >
+                {darkMode ? "Light Mode" : "Dark Mode"}
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-          {/* Mobile dropdown menu */}
-          <div className="d-md-none">
-            <button
-              className="btn btn-outline-light"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              ☰ Menu
-            </button>
-
-            {menuOpen && (
-              <div className="position-absolute bg-white text-dark p-3 shadow rounded mt-2" style={{ right: 10, zIndex: 1050 }}>
-                <nav className="nav flex-column">
-                  <Link className="nav-link" to="/" onClick={() => setMenuOpen(false)}>🏠 Home</Link>
-                  <Link className="nav-link" to="/simulator" onClick={() => setMenuOpen(false)}>🪐 Simulator</Link>                  
-                  <Link className="nav-link" to="/about" onClick={() => setMenuOpen(false)}>ℹ️ About</Link>
-                </nav>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <div className="d-flex flex-grow-1">
-        {/* Sidebar desktop */}
-        <aside className="bg-light p-3 d-none d-md-block" style={{ width: 220 }}>
-          <nav className="nav flex-column">
-            <Link className="nav-link" to="/">🏠 Home</Link>
-            <Link className="nav-link" to="/simulator">🪐 Simulator</Link>            
-            <Link className="nav-link" to="/about">ℹ️ About</Link>
-          </nav>
-        </aside>
-
-        {/* Conteúdo principal */}
-        <main className="flex-grow-1 p-3">
-          <Outlet />
-        </main>
-      </div>
+      <main className="p-3">
+        <Outlet />
+      </main>
     </div>
   );
 }
-
-export default Layout;

@@ -47,7 +47,11 @@ function LocationMarker({ setImpactPoint }: { setImpactPoint: (latlng: [number, 
   return null;
 }
 
-export default function AsteroidSimulator() {
+interface AsteroidSimulatorProps {
+  darkMode: boolean;
+}
+
+export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) {
   const [impactPoint, setImpactPoint] = useState<[number, number] | null>(null);
   const [diameter, setDiameter] = useState(50); // metros
   const [velocity, setVelocity] = useState(20000); // m/s
@@ -57,8 +61,19 @@ export default function AsteroidSimulator() {
   const impact = computeImpact(diameter, density, velocity, angle);
   const pos = impactPoint as [number, number];
 
+  const containerClass = darkMode ? "container-fluid bg-dark text-light" : "container-fluid bg-light text-dark";
+  const controlBoxClass = darkMode ? "mt-3 p-2 border bg-secondary text-light rounded" : "mt-3 p-2 border bg-light rounded";
+
+  const tileUrl = darkMode
+    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+  const attribution = darkMode
+    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
   return (
-    <div className="container-fluid">
+    <div className={containerClass}>
       <div className="row flex-column-reverse flex-md-row">
         {/* Controles */}
         <div className="col-12 col-md-3 mb-3">
@@ -97,7 +112,7 @@ export default function AsteroidSimulator() {
             onChange={(e) => setAngle(Number(e.target.value))}
           />
 
-          <div className="mt-3 p-2 border bg-light">
+          <div className={controlBoxClass}>
             <p>Energy: {impact.energyMt.toFixed(2)} Mt TNT</p>
             <p>Crater: {impact.craterDiameterKm.toFixed(2)} km</p>
             <p>Radius 1 psi: {(impact.radiiOverpressure.p1psi / 1000).toFixed(1)} km</p>
@@ -112,11 +127,11 @@ export default function AsteroidSimulator() {
         {/* Mapa */}
         <div className="col-12 col-md-9" style={{ height: "70vh", minHeight: "400px" }}>
           <MapContainer
-            center={impactPoint || [0, 0] as [number, number]}
+            center={impactPoint || [0, 0]}
             zoom={2}
             style={{ height: "100%", width: "100%" }}
           >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <TileLayer url={tileUrl} attribution={attribution} />
             <LocationMarker setImpactPoint={setImpactPoint} />
 
             {impactPoint && (
@@ -128,7 +143,7 @@ export default function AsteroidSimulator() {
                 <LeafletCircle
                   center={pos}
                   radius={impact.craterDiameterKm * 500}
-                  pathOptions={{ color: "black", fillOpacity: 0.2 }}
+                  pathOptions={{ color: darkMode ? "#fff" : "black", fillOpacity: 0.2 }}
                 />
                 <LeafletCircle
                   center={pos}
