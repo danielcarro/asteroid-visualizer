@@ -6,6 +6,7 @@ import Simulator from "./pages/Simulator";
 import About from "./pages/About";
 import Dashboard from "./pages/Dashboard";
 
+
 function App() {
   const [darkMode, setDarkMode] = useState(false); // estado do modo escuro
 
@@ -18,7 +19,7 @@ function App() {
         <Route index element={<Home darkMode={darkMode} />} />
         <Route path="about" element={<About darkMode={darkMode} />} />
         <Route path="simulator" element={<Simulator darkMode={darkMode} />} />
-        <Route path="dashboard" element={<Dashboard darkMode={darkMode} />} />
+        <Route path="dashboard" element={<Dashboard darkMode={darkMode} />} />        
       </Route>
     </Routes>
   );
