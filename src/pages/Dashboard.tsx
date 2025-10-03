@@ -1,4 +1,6 @@
 // src/pages/Dashboard.tsx
+"use client";
+
 import { useEffect, useState } from "react";
 import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -30,8 +32,6 @@ interface DashboardProps {
   darkMode: boolean;
 }
 
-const API_KEY = import.meta.env.VITE_NASA_API_KEY;
-
 export default function Dashboard({ darkMode }: DashboardProps) {
   const [asteroids, setAsteroids] = useState<Asteroid[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,12 +58,11 @@ export default function Dashboard({ darkMode }: DashboardProps) {
     fetchAsteroids();
   }, []);
 
-  // filtros
+  // filtragem
   const filteredAsteroids = asteroids.filter(a => {
     const diameter =
       (a.estimated_diameter.kilometers.estimated_diameter_min +
-        a.estimated_diameter.kilometers.estimated_diameter_max) /
-      2;
+        a.estimated_diameter.kilometers.estimated_diameter_max) / 2;
     const inc = Number(a.orbital_data?.inclination || 0);
     return (
       a.name.toLowerCase().includes(nameFilter.toLowerCase()) &&
@@ -78,8 +77,14 @@ export default function Dashboard({ darkMode }: DashboardProps) {
   const tableClass = darkMode ? "table table-dark table-striped table-hover mb-0" : "table table-striped table-hover mb-0";
   const bgClass = darkMode ? "bg-secondary text-light" : "bg-light text-dark";
 
-  // Cores para PieChart
+  // PieChart: cores e dados
   const PIE_COLORS = ["#82ca9d", "#ff7300"];
+  const hazardousCount = filteredAsteroids.filter(a => a.is_potentially_hazardous_asteroid).length;
+  const safeCount = filteredAsteroids.length - hazardousCount;
+  const hazardData = [
+    { name: "Safe", value: safeCount },
+    { name: "Hazardous", value: hazardousCount }
+  ];
 
   // Histograma de diâmetros
   const histogramBins = [0, 1, 5, 10, 20, 50, 100];
@@ -92,15 +97,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
     return { range: `${min}-${max}`, count };
   });
 
-  // PieChart: perigosos vs não perigosos
-  const hazardousCount = filteredAsteroids.filter(a => a.is_potentially_hazardous_asteroid).length;
-  const safeCount = filteredAsteroids.length - hazardousCount;
-  const hazardData = [
-    { name: "Safe", value: safeCount },
-    { name: "Hazardous", value: hazardousCount }
-  ];
-
-  // ScatterChart: velocidade x distância mínima da primeira aproximação
+  // ScatterChart: velocidade x distância mínima
   const approachData = filteredAsteroids
     .map(a => a.close_approach_data?.[0])
     .filter(Boolean)
@@ -176,7 +173,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
         <p>Loading asteroids...</p>
       ) : (
         <>
-          {/* Tabela */}
+          {/* Tabela de asteroides */}
           <div className="row mb-4">
             <div className="col-12">
               <div className={cardClass}>
@@ -219,7 +216,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
 
           {/* Gráficos */}
           <div className="row g-4">
-            {/* 1. Scatter: Perihelion vs Eccentricity */}
+            {/* ScatterChart: Perihelion vs Eccentricity */}
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Perihelion vs Eccentricity</div>
@@ -245,7 +242,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
 
-            {/* 2. BarChart: Diametro */}
+            {/* BarChart: Diameter */}
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Diameter (km)</div>
@@ -267,7 +264,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
 
-            {/* 3. RadarChart */}
+            {/* RadarChart */}
             <div className="col-12">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Orbital Radar (e, i, q)</div>
@@ -296,7 +293,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
 
-            {/* 4. PieChart: perigosos vs não perigosos */}
+            {/* PieChart: Hazardous vs Safe */}
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Hazardous vs Safe</div>
@@ -304,7 +301,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie data={hazardData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                        {hazardData.map((entry, index) => (
+                        {hazardData.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                         ))}
                       </Pie>
@@ -316,7 +313,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
 
-            {/* 5. Histogram: diâmetro */}
+            {/* Histogram: Diameter Distribution */}
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Diameter Distribution</div>
@@ -334,7 +331,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
 
-            {/* 6. Scatter: velocidade x distância */}
+            {/* ScatterChart: Velocity vs Miss Distance */}
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Velocity vs Miss Distance</div>
@@ -352,7 +349,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
 
-            {/* 7. LineChart: timeline de aproximações */}
+            {/* Timeline: Approaches per Decade */}
             <div className="col-12">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Approaches per Decade</div>

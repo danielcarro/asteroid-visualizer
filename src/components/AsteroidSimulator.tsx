@@ -56,29 +56,6 @@ function computeImpact(D: number, rhoP: number, v: number, thetaDeg: number) {
   };
 }
 
-// Função para estimar mortos e prejuízos
-function estimateImpactEffects(
-  impact: ReturnType<typeof computeImpact>,
-  populationDensity = 200,
-  valuePerKm2 = 5e6
-) {
-  const areasKm2 = {
-    p1psi: Math.PI * Math.pow(impact.radiiOverpressure.p1psi / 1000, 2),
-    p3psi: Math.PI * Math.pow(impact.radiiOverpressure.p3psi / 1000, 2),
-    p5psi: Math.PI * Math.pow(impact.radiiOverpressure.p5psi / 1000, 2),
-    p20psi: Math.PI * Math.pow(impact.radiiOverpressure.p20psi / 1000, 2),
-  };
-
-  const estimatedDeaths = Math.round((areasKm2.p3psi + areasKm2.p5psi) / 2 * populationDensity);
-  const estimatedDamage = Math.round(areasKm2.p1psi * valuePerKm2);
-
-  return {
-    areasKm2,
-    estimatedDeaths,
-    estimatedDamage,
-  };
-}
-
 // Captura clique no mapa
 function LocationMarker({ setImpactPoint }: { setImpactPoint: (latlng: [number, number]) => void }) {
   useMapEvents({
@@ -113,6 +90,7 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
 
   const [minSize, setMinSize] = useState(0);
   const [showHazardousOnly, setShowHazardousOnly] = useState(false);
+  const [selectedAsteroid, setSelectedAsteroid] = useState<Asteroid | null>(null);
 
   useEffect(() => {
     async function fetchAsteroids() {
@@ -132,7 +110,6 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
   }, []);
 
   const impact = computeImpact(diameter, density, velocity, angle);
-  const impactEffects = estimateImpactEffects(impact, 200, 5e6);
   const pos = impactPoint as [number, number];
 
   const filteredAsteroids = asteroids.filter(a => {
@@ -150,12 +127,20 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
     ? '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
     : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
+  // Estimativa de destruição (simulada)
+  const destructionData = selectedAsteroid
+    ? {
+        deaths: Math.floor(Math.random() * 1_000_000),
+        damage: Math.floor(Math.random() * 10_000_000_000),
+      }
+    : null;
+
   return (
     <div className={darkMode ? "container-fluid bg-dark text-light" : "container-fluid bg-light text-dark"}>
-      <div className="row g-3">
-        {/* Sidebar / Controles */}
-        <div className="col-12 col-lg-3">
-          <h4>Asteroid Simulator</h4>
+      <div className="row flex-column-reverse flex-lg-row">
+        {/* Controles e lista */}
+        <div className="col-12 col-lg-4 mb-3">
+          <h4>Asteroid Parameters</h4>
 
           <label>Diameter (m): {diameter}</label>
           <input type="range" min={10} max={1000} step={10} className="form-range" value={diameter} onChange={e => setDiameter(Number(e.target.value))} />
@@ -167,26 +152,24 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
           <input type="range" min={10} max={90} step={1} className="form-range" value={angle} onChange={e => setAngle(Number(e.target.value))} />
 
           <div className={darkMode ? "mt-3 p-2 border bg-secondary text-light rounded" : "mt-3 p-2 border bg-light rounded"}>
-            <h5>Impact Estimates</h5>
             <p>Energy: {impact.energyMt.toFixed(2)} Mt TNT</p>
             <p>Crater: {impact.craterDiameterKm.toFixed(2)} km</p>
-            <p>Estimated Deaths: {impactEffects.estimatedDeaths.toLocaleString()}</p>
-            <p>Estimated Damage: ${impactEffects.estimatedDamage.toLocaleString()}</p>
-            <p>Area 1psi: {impactEffects.areasKm2.p1psi.toFixed(1)} km²</p>
-            <p>Area 3psi: {impactEffects.areasKm2.p3psi.toFixed(1)} km²</p>
-            <p>Area 5psi: {impactEffects.areasKm2.p5psi.toFixed(1)} km²</p>
-            <p>Area 20psi: {impactEffects.areasKm2.p20psi.toFixed(1)} km²</p>
+            <p>Radius 1 psi: {(impact.radiiOverpressure.p1psi / 1000).toFixed(1)} km</p>
+            <p>Radius 3 psi: {(impact.radiiOverpressure.p3psi / 1000).toFixed(1)} km</p>
+            <p>Radius 5 psi: {(impact.radiiOverpressure.p5psi / 1000).toFixed(1)} km</p>
+            <p>Radius 20 psi: {(impact.radiiOverpressure.p20psi / 1000).toFixed(1)} km</p>
           </div>
 
           <hr />
 
-          {/* Filtros e lista */}
           <label>Min Asteroid Size (km): {minSize}</label>
           <input type="range" min={0} max={10} step={0.5} className="form-range" value={minSize} onChange={e => setMinSize(Number(e.target.value))} />
 
           <div className="form-check mt-2">
             <input className="form-check-input" type="checkbox" checked={showHazardousOnly} onChange={e => setShowHazardousOnly(e.target.checked)} id="hazardCheck" />
-            <label className="form-check-label" htmlFor="hazardCheck">Show hazardous only</label>
+            <label className="form-check-label" htmlFor="hazardCheck">
+              Show hazardous only
+            </label>
           </div>
 
           <div className="mt-3">
@@ -203,12 +186,8 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
                     <li
                       key={a.id}
                       className="list-group-item d-flex justify-content-between align-items-center"
+                      onClick={() => setSelectedAsteroid(a)}
                       style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        setDiameter(diam * 1000);
-                        setVelocity(20000);
-                        setAngle(45);
-                      }}
                     >
                       {a.name} {a.is_potentially_hazardous_asteroid && <span className="badge bg-danger ms-2">!</span>}
                       <span className="badge bg-primary rounded-pill">{diam.toFixed(2)} km</span>
@@ -219,14 +198,22 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
             )}
           </div>
 
+          {selectedAsteroid && destructionData && (
+            <div className="mt-3 p-2 border rounded bg-warning text-dark">
+              <h6>Estimated Impact Effects for {selectedAsteroid.name}</h6>
+              <p>Deaths: {destructionData.deaths.toLocaleString()}</p>
+              <p>Damage: ${destructionData.damage.toLocaleString()}</p>
+            </div>
+          )}
+
           {/* Gráfico */}
           <div className="mt-3" style={{ height: 250 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={filteredAsteroids.slice(0, 10).map(a => {
                   const diam = (a.estimated_diameter.kilometers.estimated_diameter_min + a.estimated_diameter.kilometers.estimated_diameter_max) / 2;
-                  const energy = computeImpact(diam * 1000, density, velocity, angle).energyMt;
-                  return { name: a.name, energy: energy.toFixed(2) };
+                  const impactEnergy = computeImpact(diam * 1000, density, velocity, angle).energyMt;
+                  return { name: a.name, energy: impactEnergy.toFixed(2) };
                 })}
               >
                 <CartesianGrid strokeDasharray="3 3" />
@@ -240,7 +227,7 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
         </div>
 
         {/* Mapa */}
-        <div className="col-12 col-lg-9" style={{ height: "70vh", minHeight: "400px" }}>
+        <div className="col-12 col-lg-8 mb-3" style={{ height: "80vh", minHeight: "400px" }}>
           <MapContainer center={impactPoint || [0, 0]} zoom={2} style={{ height: "100%", width: "100%" }}>
             <TileLayer url={tileUrl} attribution={attribution} />
             <LocationMarker setImpactPoint={setImpactPoint} />
