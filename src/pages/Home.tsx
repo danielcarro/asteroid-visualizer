@@ -11,8 +11,7 @@ export default function Home({ darkMode }: HomeProps) {
   const cardBg = darkMode ? "bg-dark text-light" : "bg-white text-dark";
 
   return (
-    <div className={`container py-5 ${darkMode ? "bg-dark" : "bg-light"}`}>
-      {/* Hero Section */}
+    <div className={`container py-5 ${darkMode ? "bg-dark" : "bg-light"}`}>  
       <div className="text-center mb-5">
         <h1 className={`display-4 fw-bold mb-3 ${textColor}`}>
           <i className="bi bi-rocket-fill me-2"></i>NASA Asteroid Impact Simulator
@@ -24,8 +23,7 @@ export default function Home({ darkMode }: HomeProps) {
           <i className="bi bi-planet me-2"></i>Launch Simulator
         </Link>
       </div>
-
-      {/* Feature Highlights */}
+ 
       <div className="row g-4 text-center">
         <div className="col-md-4">
           <div className={`card h-100 shadow-sm border-0 ${cardBg}`}>
@@ -62,7 +60,6 @@ export default function Home({ darkMode }: HomeProps) {
         </div>
       </div>
 
-      {/* Footer Note / CTA */}
       <div className="text-center mt-5">
         <p className={textMuted}>
           Learn about asteroid hazards and explore simulations designed with NASA data. Start experimenting now!

@@ -1,4 +1,3 @@
-// src/pages/Dashboard.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -35,8 +34,6 @@ interface DashboardProps {
 export default function Dashboard({ darkMode }: DashboardProps) {
   const [asteroids, setAsteroids] = useState<Asteroid[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // filtros
   const [nameFilter, setNameFilter] = useState("");
   const [diameterFilter, setDiameterFilter] = useState<[number, number]>([0, 50]);
   const [inclinationFilter, setInclinationFilter] = useState<[number, number]>([0, 180]);
@@ -58,7 +55,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
     fetchAsteroids();
   }, []);
 
-  // filtragem
+
   const filteredAsteroids = asteroids.filter(a => {
     const diameter =
       (a.estimated_diameter.kilometers.estimated_diameter_min +
@@ -77,7 +74,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
   const tableClass = darkMode ? "table table-dark table-striped table-hover mb-0" : "table table-striped table-hover mb-0";
   const bgClass = darkMode ? "bg-secondary text-light" : "bg-light text-dark";
 
-  // PieChart: cores e dados
+ 
   const PIE_COLORS = ["#82ca9d", "#ff7300"];
   const hazardousCount = filteredAsteroids.filter(a => a.is_potentially_hazardous_asteroid).length;
   const safeCount = filteredAsteroids.length - hazardousCount;
@@ -86,7 +83,6 @@ export default function Dashboard({ darkMode }: DashboardProps) {
     { name: "Hazardous", value: hazardousCount }
   ];
 
-  // Histograma de diâmetros
   const histogramBins = [0, 1, 5, 10, 20, 50, 100];
   const diameterHistogram = histogramBins.slice(0, -1).map((min, i) => {
     const max = histogramBins[i + 1];
@@ -97,7 +93,6 @@ export default function Dashboard({ darkMode }: DashboardProps) {
     return { range: `${min}-${max}`, count };
   });
 
-  // ScatterChart: velocidade x distância mínima
   const approachData = filteredAsteroids
     .map(a => a.close_approach_data?.[0])
     .filter(Boolean)
@@ -106,7 +101,6 @@ export default function Dashboard({ darkMode }: DashboardProps) {
       velocity: Number(c!.relative_velocity.kilometers_per_second)
     }));
 
-  // Timeline: contagem de aproximações por década
   const decadeCounts: Record<string, number> = {};
   filteredAsteroids.forEach(a => {
     a.close_approach_data?.forEach(c => {
@@ -122,8 +116,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
   return (
     <div className={`container-fluid p-3 ${bgClass}`}>
       <h1 className="mb-4">Dashboard - Near Earth Objects</h1>
-
-      {/* Filters */}
+  
       <div className="row g-3 mb-3">
         <div className="col-12 col-md-4">
           <label className="form-label fw-bold">Search Asteroid</label>
@@ -172,8 +165,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
       {loading ? (
         <p>Loading asteroids...</p>
       ) : (
-        <>
-          {/* Tabela de asteroides */}
+        <>         
           <div className="row mb-4">
             <div className="col-12">
               <div className={cardClass}>
@@ -213,10 +205,8 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
           </div>
-
-          {/* Gráficos */}
-          <div className="row g-4">
-            {/* ScatterChart: Perihelion vs Eccentricity */}
+     
+          <div className="row g-4">  
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Perihelion vs Eccentricity</div>
@@ -241,8 +231,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                 </div>
               </div>
             </div>
-
-            {/* BarChart: Diameter */}
+          
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Diameter (km)</div>
@@ -264,8 +253,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
 
-            {/* RadarChart */}
-            <div className="col-12">
+             <div className="col-12">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Orbital Radar (e, i, q)</div>
                 <div className="card-body" style={{ minHeight: 400 }}>
@@ -292,8 +280,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                 </div>
               </div>
             </div>
-
-            {/* PieChart: Hazardous vs Safe */}
+        
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Hazardous vs Safe</div>
@@ -312,8 +299,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                 </div>
               </div>
             </div>
-
-            {/* Histogram: Diameter Distribution */}
+           
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Diameter Distribution</div>
@@ -331,7 +317,6 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
 
-            {/* ScatterChart: Velocity vs Miss Distance */}
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Velocity vs Miss Distance</div>
@@ -348,8 +333,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                 </div>
               </div>
             </div>
-
-            {/* Timeline: Approaches per Decade */}
+         
             <div className="col-12">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Approaches per Decade</div>

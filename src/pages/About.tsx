@@ -20,8 +20,7 @@ function About({ darkMode }: AboutProps) {
         <p className={`mt-3 ${textMutedClass}`}>
           <strong>Developed by the Generation Code team:</strong> a father-and-children group dedicated to software innovation from <strong>São Paulo, Brazil</strong>.
         </p>
-
-        {/* Fotos dos participantes */}
+        
         <div className="row justify-content-center mt-4 g-3">
           <div className="col-6 col-md-3 text-center">
             <img
@@ -53,8 +52,7 @@ function About({ darkMode }: AboutProps) {
             <p className="mt-2"><strong>Matheus</strong><br />Son & Systems Development Student</p>
           </div>
         </div>
-
-        {/* Logo e bandeira */}
+   
         <div className="mt-5 d-flex justify-content-center align-items-center gap-3">
           <div style={{ width: 200, height: 80 }}>
             <svg width="200" height="80" xmlns="http://www.w3.org/2000/svg">

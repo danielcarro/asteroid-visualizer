@@ -21,7 +21,7 @@ import {
   CartesianGrid,
 } from "recharts";
 
-// Função de cálculo de impacto
+
 function computeImpact(D: number, rhoP: number, v: number, thetaDeg: number) {
   const g = 9.81;
   const rhoT = 2500;
@@ -56,7 +56,6 @@ function computeImpact(D: number, rhoP: number, v: number, thetaDeg: number) {
   };
 }
 
-// Captura clique no mapa
 function LocationMarker({ setImpactPoint }: { setImpactPoint: (latlng: [number, number]) => void }) {
   useMapEvents({
     click(e: LeafletMouseEvent) {
@@ -93,10 +92,10 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
   const [selectedAsteroid, setSelectedAsteroid] = useState<Asteroid | null>(null);
 
   const cometIcon = new Icon({
-    iconUrl: "/comet.png", // caminho da sua imagem do cometa na pasta public
-    iconSize: [40, 40],    // tamanho do ícone
-    iconAnchor: [20, 20],  // ponto de ancoragem (centro do ícone)
-    popupAnchor: [0, -20]  // posição do popup em relação ao ícone
+    iconUrl: "/comet.png", 
+    iconSize: [40, 40],    
+    iconAnchor: [20, 20],  
+    popupAnchor: [0, -20]  
   });
 
   useEffect(() => {
@@ -133,8 +132,7 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
   const attribution = darkMode
     ? '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
     : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-
-  // Estimativa de destruição (simulada)
+  
   const destructionData = selectedAsteroid
     ? {
       deaths: Math.floor(Math.random() * 1_000_000),
@@ -144,8 +142,7 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
 
   return (
     <div className={darkMode ? "container-fluid bg-dark text-light" : "container-fluid bg-light text-dark"}>
-      <div className="row flex-column-reverse flex-lg-row">
-        {/* Controles e lista */}
+      <div className="row flex-column-reverse flex-lg-row">     
         <div className="col-12 col-lg-4 mb-3">
           <h4>Asteroid Parameters</h4>
 
@@ -212,8 +209,7 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
               <p>Damage: ${destructionData.damage.toLocaleString()}</p>
             </div>
           )}
-
-          {/* Gráfico */}
+  
           <div className="mt-3" style={{ height: 250 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -232,8 +228,7 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
             </ResponsiveContainer>
           </div>
         </div>
-
-        {/* Mapa */}
+       
         <div className="col-12 col-lg-8 mb-3" style={{ height: "80vh", minHeight: "400px" }}>
           <MapContainer center={impactPoint || [0, 0]} zoom={2} style={{ height: "100%", width: "100%" }}>
             <TileLayer url={tileUrl} attribution={attribution} />
