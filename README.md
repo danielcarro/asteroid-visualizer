@@ -1,69 +1,56 @@
-# React + TypeScript + Vite
+# Impactor-2025 Simulation Tool 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+**Impactor-2025 Simulation Tool** is an interactive web application developed to simulate asteroid impacts on Earth using real data from NASA (NEO API) and USGS. It allows users to explore impact scenarios, predict consequences, and evaluate mitigation strategies in an educational and visual way.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project was created for the **NASA Space Apps Challenge 2025**.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📌 Project Objectives
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Integrate Near-Earth Object (NEO) data from NASA with geological and environmental datasets from USGS.
+- Simulate asteroid trajectories using orbital elements.
+- Estimate impact energy, crater size, and environmental effects (tsunamis, seismic waves).
+- Allow users to test mitigation strategies such as asteroid deflection.
+- Provide interactive and intuitive visualizations with graphs, maps, and 3D animations.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🛠 Technologies Used
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Frontend**: React + TypeScript, Bootstrap 5
+- **3D/2D Visualizations**: Three.js, D3.js
+- **APIs**:  
+  - NASA NEO API (near-Earth asteroids)  
+  - USGS (geological and environmental data)
+- **State Management**: React Hooks  
+- **Styling**: Bootstrap, custom CSS
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## ⚡ Features
+
+- **Interactive Simulation**: Adjust asteroid parameters (size, velocity, impact angle) and view the trajectory in real time.
+- **Impact Visualization**: Maps showing impact zones, tsunamis, and seismic effects.
+- **Mitigation Strategies**: Test kinetic impactor deflection and see how the impact point changes.
+- **Analytical Graphs**: Impact energy, crater size, and potential damage.
+- **Educational**: Tooltips and infographics explaining concepts like eccentricity, orbital velocity, and kinetic energy.
+- **Responsive and Accessible**: Works on desktop, tablet, and mobile; colorblind-friendly palette.
+
+---
+
+## 🚀 How to Run Locally
+
+### Prerequisites
+
+- Node.js >= 18.x
+- npm >= 9.x or yarn
+- Access to NASA NEO API (free key)
+
+### Steps
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/impactor-2025.git
+   cd impactor-2025
