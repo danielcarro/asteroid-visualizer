@@ -9,7 +9,7 @@ import {
   Popup,
   useMapEvents,
 } from "react-leaflet";
-import type { LeafletMouseEvent } from "leaflet";
+import { Icon, type LeafletMouseEvent } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {
   ResponsiveContainer,
@@ -92,6 +92,13 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
   const [showHazardousOnly, setShowHazardousOnly] = useState(false);
   const [selectedAsteroid, setSelectedAsteroid] = useState<Asteroid | null>(null);
 
+  const cometIcon = new Icon({
+    iconUrl: "/comet.png", // caminho da sua imagem do cometa na pasta public
+    iconSize: [40, 40],    // tamanho do ícone
+    iconAnchor: [20, 20],  // ponto de ancoragem (centro do ícone)
+    popupAnchor: [0, -20]  // posição do popup em relação ao ícone
+  });
+
   useEffect(() => {
     async function fetchAsteroids() {
       try {
@@ -130,9 +137,9 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
   // Estimativa de destruição (simulada)
   const destructionData = selectedAsteroid
     ? {
-        deaths: Math.floor(Math.random() * 1_000_000),
-        damage: Math.floor(Math.random() * 10_000_000_000),
-      }
+      deaths: Math.floor(Math.random() * 1_000_000),
+      damage: Math.floor(Math.random() * 10_000_000_000),
+    }
     : null;
 
   return (
@@ -233,7 +240,7 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
             <LocationMarker setImpactPoint={setImpactPoint} />
             {impactPoint && (
               <>
-                <Marker position={pos}>
+                <Marker position={pos} icon={cometIcon}>
                   <Popup>Impact Location</Popup>
                 </Marker>
                 <LeafletCircle
