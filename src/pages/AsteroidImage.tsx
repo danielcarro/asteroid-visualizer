@@ -14,6 +14,7 @@ interface AstroItem {
 
 function AsteroidImage({ darkMode }: AboutProps) {
   const bgClass = darkMode ? "bg-dark text-light" : "bg-light text-dark";
+  const cardClass = darkMode ? "bg-secondary text-light" : "bg-white text-dark";
   const [items, setItems] = useState<AstroItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,7 +37,7 @@ function AsteroidImage({ darkMode }: AboutProps) {
 
         const data = await response.json();
         let allAsteroids = Object.values(data.near_earth_objects).flat();
-        allAsteroids = allAsteroids.slice(0, 121); // limit to 121 asteroids/comets
+        allAsteroids = allAsteroids.slice(0, 121); // limit to 121 items
 
         const albumData: AstroItem[] = await Promise.all(
           allAsteroids.map(async (asteroid: any, index: number) => {
@@ -51,20 +52,23 @@ function AsteroidImage({ darkMode }: AboutProps) {
               ? `An asteroid orbiting near Earth, composed mainly of metallic rocks and cosmic dust.`
               : `A bright comet visible in the night sky, made of ice and dust that forms a luminous tail when approaching the Sun.`;
 
-            // 🔹 Fetch real images from NASA Image and Video Library
-            let image = "";
+            // Default image fallback
+            let image = "https://www.nasa.gov/sites/default/files/thumbnails/image/asteroid20131202-full.jpg";
+
+            // Try fetching real image from NASA Image API safely
             try {
-              const imgRes = await fetch(
-                `https://images-api.nasa.gov/search?q=${encodeURIComponent(
-                  asteroid.name
-                )}&media_type=image`
-              );
-              const imgData = await imgRes.json();
-              image =
-                imgData?.collection?.items?.[0]?.links?.[0]?.href ||
-                "https://www.nasa.gov/sites/default/files/thumbnails/image/asteroid20131202-full.jpg"; // fallback
-            } catch {
-              image = "https://www.nasa.gov/sites/default/files/thumbnails/image/asteroid20131202-full.jpg";
+              if (asteroid.name) {
+                const imgRes = await fetch(
+                  `https://images-api.nasa.gov/search?q=${encodeURIComponent(
+                    asteroid.name
+                  )}&media_type=image`
+                );
+                const imgData = await imgRes.json();
+                const foundImage = imgData?.collection?.items?.[0]?.links?.[0]?.href;
+                if (foundImage) image = foundImage;
+              }
+            } catch (e) {
+              console.warn(`Image fetch failed for ${asteroid.name}`, e);
             }
 
             return {
@@ -108,7 +112,7 @@ function AsteroidImage({ darkMode }: AboutProps) {
           <div className="row g-4">
             {currentItems.map((item) => (
               <div key={item.id} className="col-12 col-md-6 col-lg-4">
-                <div className="card h-100 shadow-sm border-0">
+                <div className={`card h-100 shadow-sm border-0 ${cardClass}`}>
                   <img
                     src={item.image}
                     alt={item.title}
@@ -140,14 +144,20 @@ function AsteroidImage({ darkMode }: AboutProps) {
             ))}
           </div>
 
+          {/* Pagination */}
           <nav className="mt-4">
             <ul className="pagination justify-content-center">
               {Array.from({ length: totalPages }, (_, i) => (
                 <li
                   key={i + 1}
-                  className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
+                  className={`page-item ${currentPage === i + 1 ? "active" : ""} ${
+                    darkMode ? "bg-dark" : ""
+                  }`}
                 >
-                  <button className="page-link" onClick={() => paginate(i + 1)}>
+                  <button
+                    className={`page-link ${darkMode ? "bg-dark text-light" : ""}`}
+                    onClick={() => paginate(i + 1)}
+                  >
                     {i + 1}
                   </button>
                 </li>
