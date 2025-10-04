@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Simulator from "./pages/Simulator";
 import About from "./pages/About";
 import Dashboard from "./pages/Dashboard";
+import AsteroidImage from "./pages/AsteroidImage";
 
 
 function App() {
@@ -19,7 +20,8 @@ function App() {
         <Route index element={<Home darkMode={darkMode} />} />
         <Route path="about" element={<About darkMode={darkMode} />} />
         <Route path="simulator" element={<Simulator darkMode={darkMode} />} />
-        <Route path="dashboard" element={<Dashboard darkMode={darkMode} />} />        
+        <Route path="dashboard" element={<Dashboard darkMode={darkMode} />} />   
+        <Route path="asteroidimage" element={<AsteroidImage darkMode={darkMode} />} />       
       </Route>
     </Routes>
   );

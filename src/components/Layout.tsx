@@ -23,7 +23,8 @@ export default function Layout({ darkMode, setDarkMode }: LayoutProps) {
               <Nav.Link as={Link} to="/">Home</Nav.Link>
               <Nav.Link as={Link} to="/about">About</Nav.Link>
               <Nav.Link as={Link} to="/simulator">Simulator</Nav.Link>
-              <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>             
+              <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>   
+              <Nav.Link as={Link} to="/asteroidimage">Asteroid</Nav.Link>           
               <Button
                 variant={darkMode ? "secondary" : "dark"}
                 className="ms-lg-3 mt-2 mt-lg-0"
