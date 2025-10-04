@@ -1,7 +1,7 @@
-# Impactor-2025 Simulation Tool 🚀
+# Asteroid Visualizer Simulation Tool 🚀
 
 
-**Impactor-2025 Simulation Tool** is an interactive web application developed to simulate asteroid impacts on Earth using real data from NASA (NEO API) and USGS. It allows users to explore impact scenarios, predict consequences, and evaluate mitigation strategies in an educational and visual way.
+**Asteroid Visualizer Simulation Tool** is an interactive web application developed to simulate asteroid impacts on Earth using real data from NASA (NEO API) and USGS. It allows users to explore impact scenarios, predict consequences, and evaluate mitigation strategies in an educational and visual way.
 
 This project was created for the **NASA Space Apps Challenge 2025**.
 
@@ -52,5 +52,5 @@ This project was created for the **NASA Space Apps Challenge 2025**.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/impactor-2025.git
-   cd impactor-2025
+   git clone https://github.com/your-username/asteroid-visualizer.git
+   cd asteroid-visualizer
