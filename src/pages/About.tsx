@@ -34,7 +34,7 @@ function About({ darkMode }: AboutProps) {
 
           <div className="col-6 col-md-3 text-center">
             <img
-              src="https://media.licdn.com/dms/image/v2/D4E03AQEGa6v9zqCrMg/profile-displayphoto-scale_200_200/B4EZjHzO.8GYAw-/0/1755698757360?e=1759363200&v=beta&t=3f-hwK3XAx_-sXbXqHsIlN4tWtkQJ4t3pZG6FYl1Oq8"
+              src="https://avatars.githubusercontent.com/u/100871201?s=64&v=4"
               alt="Gabriela"
               className="rounded-circle border border-2 border-success"
               style={{ width: 150, height: 150, objectFit: 'cover' }}
@@ -44,7 +44,7 @@ function About({ darkMode }: AboutProps) {
 
           <div className="col-6 col-md-3 text-center">
             <img
-              src="https://axe.avacursosonline.com.br/ma.jpg"
+              src="https://avatars.githubusercontent.com/u/231574334?v=4"
               alt="Matheus"
               className="rounded-circle border border-2 border-warning"
               style={{ width: 150, height: 150, objectFit: 'cover' }}
