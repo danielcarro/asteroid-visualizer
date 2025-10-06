@@ -10,6 +10,7 @@ import {
 interface Asteroid {
   id: string;
   name: string;
+  link: string;
   absolute_magnitude_h: number;
   estimated_diameter: {
     kilometers: { estimated_diameter_min: number; estimated_diameter_max: number };
@@ -38,13 +39,17 @@ export default function Dashboard({ darkMode }: DashboardProps) {
   const [diameterFilter, setDiameterFilter] = useState<[number, number]>([0, 50]);
   const [inclinationFilter, setInclinationFilter] = useState<[number, number]>([0, 180]);
 
+  // 🔹 Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     async function fetchAsteroids() {
       try {
         const res = await fetch(
           `https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=25WnxHvwNcN9cDTBNiiqXn2YliM7wW2gkDmGuPXC`
         );
-        const data = await res.json();
+        const data = await res.json();        
         setAsteroids(data.near_earth_objects || []);
       } catch (err) {
         console.error("Erro ao buscar asteroides:", err);
@@ -54,7 +59,6 @@ export default function Dashboard({ darkMode }: DashboardProps) {
     }
     fetchAsteroids();
   }, []);
-
 
   const filteredAsteroids = asteroids.filter(a => {
     const diameter =
@@ -70,11 +74,15 @@ export default function Dashboard({ darkMode }: DashboardProps) {
     );
   });
 
+  // 🔹 Paginação
+  const totalPages = Math.ceil(filteredAsteroids.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedAsteroids = filteredAsteroids.slice(startIndex, startIndex + itemsPerPage);
+
   const cardClass = darkMode ? "card bg-dark text-light shadow-sm" : "card bg-white text-dark shadow-sm";
   const tableClass = darkMode ? "table table-dark table-striped table-hover mb-0" : "table table-striped table-hover mb-0";
   const bgClass = darkMode ? "bg-secondary text-light" : "bg-light text-dark";
 
- 
   const PIE_COLORS = ["#82ca9d", "#ff7300"];
   const hazardousCount = filteredAsteroids.filter(a => a.is_potentially_hazardous_asteroid).length;
   const safeCount = filteredAsteroids.length - hazardousCount;
@@ -116,7 +124,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
   return (
     <div className={`container-fluid p-3 ${bgClass}`}>
       <h1 className="mb-4">Dashboard - Near Earth Objects</h1>
-  
+
       <div className="row g-3 mb-3">
         <div className="col-12 col-md-4">
           <label className="form-label fw-bold">Search Asteroid</label>
@@ -165,7 +173,8 @@ export default function Dashboard({ darkMode }: DashboardProps) {
       {loading ? (
         <p>Loading asteroids...</p>
       ) : (
-        <>         
+        <>
+          {/* TABELA COM PAGINAÇÃO */}
           <div className="row mb-4">
             <div className="col-12">
               <div className={cardClass}>
@@ -181,10 +190,11 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                         <th>Eccentricity</th>
                         <th>Perihelion (AU)</th>
                         <th>Hazardous</th>
+                        <th>Link</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredAsteroids.map(a => {
+                      {paginatedAsteroids.map(a => {
                         const diameter = (a.estimated_diameter.kilometers.estimated_diameter_min +
                           a.estimated_diameter.kilometers.estimated_diameter_max) / 2;
                         return (
@@ -196,16 +206,37 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                             <td>{a.orbital_data?.eccentricity || "-"}</td>
                             <td>{a.orbital_data?.perihelion_distance || "-"}</td>
                             <td>{a.is_potentially_hazardous_asteroid ? "Yes" : "No"}</td>
+                            <td><a href={a.link}>link</a></td>
                           </tr>
                         );
                       })}
                     </tbody>
                   </table>
                 </div>
+                <div className="card-footer d-flex justify-content-between align-items-center">
+                  <button
+                    className="btn btn-outline-primary btn-sm"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => prev - 1)}
+                  >
+                    Previous
+                  </button>
+                  <span>
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    className="btn btn-outline-primary btn-sm"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-     
+
+          {/* TODOS OS GRÁFICOS (SEM ALTERAÇÃO) */}
           <div className="row g-4">  
             <div className="col-12 col-lg-6">
               <div className={cardClass + " h-100"}>
@@ -253,7 +284,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
               </div>
             </div>
 
-             <div className="col-12">
+            <div className="col-12">
               <div className={cardClass + " h-100"}>
                 <div className="card-header">Orbital Radar (e, i, q)</div>
                 <div className="card-body" style={{ minHeight: 400 }}>
@@ -344,7 +375,7 @@ export default function Dashboard({ darkMode }: DashboardProps) {
                       <XAxis dataKey="decade" stroke={darkMode ? "#fff" : "#000"} />
                       <YAxis stroke={darkMode ? "#fff" : "#000"} />
                       <Tooltip contentStyle={{ backgroundColor: darkMode ? "#222" : "#fff", color: darkMode ? "#fff" : "#000" }} />
-                      <Bar dataKey="count" fill={darkMode ? "#82ca9d" : "#8884d8"} />
+                      <Bar dataKey="count" fill={darkMode ? "#82ca9d" : "#8884d8"} name="Approaches" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

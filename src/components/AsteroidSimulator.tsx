@@ -21,7 +21,7 @@ import {
   CartesianGrid,
 } from "recharts";
 
-
+// === Funções auxiliares ===
 function computeImpact(D: number, rhoP: number, v: number, thetaDeg: number) {
   const g = 9.81;
   const rhoT = 2500;
@@ -77,6 +77,7 @@ interface AsteroidSimulatorProps {
   darkMode: boolean;
 }
 
+// === Componente Principal ===
 export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) {
   const [impactPoint, setImpactPoint] = useState<[number, number] | null>(null);
   const [diameter, setDiameter] = useState(50);
@@ -86,33 +87,43 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
 
   const [asteroids, setAsteroids] = useState<Asteroid[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
 
   const [minSize, setMinSize] = useState(0);
   const [showHazardousOnly, setShowHazardousOnly] = useState(false);
   const [selectedAsteroid, setSelectedAsteroid] = useState<Asteroid | null>(null);
 
   const cometIcon = new Icon({
-    iconUrl: "/comet.png", 
-    iconSize: [40, 40],    
-    iconAnchor: [20, 20],  
-    popupAnchor: [0, -20]  
+    iconUrl: "/comet.png",
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+    popupAnchor: [0, -20],
   });
 
-  useEffect(() => {
-    async function fetchAsteroids() {
-      try {
-        const res = await fetch(
-          `https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=25WnxHvwNcN9cDTBNiiqXn2YliM7wW2gkDmGuPXC`
-        );
-        const data = await res.json();
-        setAsteroids(data.near_earth_objects);
-      } catch (err) {
-        console.error("Erro ao buscar asteroides:", err);
-      } finally {
-        setLoading(false);
-      }
+  // === Fetch com paginação ===
+  async function fetchAsteroids(pageNumber: number) {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://api.nasa.gov/neo/rest/v1/neo/browse?page=${pageNumber}&api_key=25WnxHvwNcN9cDTBNiiqXn2YliM7wW2gkDmGuPXC`
+      );
+      const data = await res.json();
+      console.log(data);
+      setAsteroids(data.near_earth_objects);
+      setHasNext(!!data.links?.next);
+      setHasPrev(!!data.links?.prev);
+      setPage(pageNumber);
+    } catch (err) {
+      console.error("Erro ao buscar asteroides:", err);
+    } finally {
+      setLoading(false);
     }
-    fetchAsteroids();
+  }
+
+  useEffect(() => {
+    fetchAsteroids(0);
   }, []);
 
   const impact = computeImpact(diameter, density, velocity, angle);
@@ -132,7 +143,7 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
   const attribution = darkMode
     ? '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
     : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-  
+
   const destructionData = selectedAsteroid
     ? {
       deaths: Math.floor(Math.random() * 1_000_000),
@@ -142,10 +153,11 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
 
   return (
     <div className={darkMode ? "container-fluid bg-dark text-light" : "container-fluid bg-light text-dark"}>
-      <div className="row flex-column-reverse flex-lg-row">     
+      <div className="row flex-column-reverse flex-lg-row">
         <div className="col-12 col-lg-4 mb-3">
           <h4>Asteroid Parameters</h4>
 
+          {/* === Sliders de controle === */}
           <label>Diameter (m): {diameter}</label>
           <input type="range" min={10} max={1000} step={10} className="form-range" value={diameter} onChange={e => setDiameter(Number(e.target.value))} />
 
@@ -158,14 +170,11 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
           <div className={darkMode ? "mt-3 p-2 border bg-secondary text-light rounded" : "mt-3 p-2 border bg-light rounded"}>
             <p>Energy: {impact.energyMt.toFixed(2)} Mt TNT</p>
             <p>Crater: {impact.craterDiameterKm.toFixed(2)} km</p>
-            <p>Radius 1 psi: {(impact.radiiOverpressure.p1psi / 1000).toFixed(1)} km</p>
-            <p>Radius 3 psi: {(impact.radiiOverpressure.p3psi / 1000).toFixed(1)} km</p>
-            <p>Radius 5 psi: {(impact.radiiOverpressure.p5psi / 1000).toFixed(1)} km</p>
-            <p>Radius 20 psi: {(impact.radiiOverpressure.p20psi / 1000).toFixed(1)} km</p>
           </div>
 
           <hr />
 
+          {/* === Filtros === */}
           <label>Min Asteroid Size (km): {minSize}</label>
           <input type="range" min={0} max={10} step={0.5} className="form-range" value={minSize} onChange={e => setMinSize(Number(e.target.value))} />
 
@@ -176,30 +185,61 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
             </label>
           </div>
 
+          {/* === Lista de asteroides === */}
           <div className="mt-3">
-            <h5>Nearby Asteroids</h5>
+            <h5>Nearby Asteroids (page {page + 1})</h5>
             {loading ? (
               <p>Loading...</p>
             ) : filteredAsteroids.length === 0 ? (
               <p>No asteroids matching filter</p>
             ) : (
               <ul className="list-group list-group-flush small">
-                {filteredAsteroids.slice(0, 10).map(a => {
-                  const diam = (a.estimated_diameter.kilometers.estimated_diameter_min + a.estimated_diameter.kilometers.estimated_diameter_max) / 2;
+                {filteredAsteroids.map(a => {
+                  const diam =
+                    (a.estimated_diameter.kilometers.estimated_diameter_min +
+                      a.estimated_diameter.kilometers.estimated_diameter_max) /
+                    2;
                   return (
                     <li
                       key={a.id}
                       className="list-group-item d-flex justify-content-between align-items-center"
                       onClick={() => setSelectedAsteroid(a)}
-                      style={{ cursor: "pointer" }}
+                      style={{
+                        cursor: "pointer",
+                        backgroundColor: darkMode ? "#343a40" : "white",
+                        color: darkMode ? "white" : "black",
+                      }}
                     >
-                      {a.name} {a.is_potentially_hazardous_asteroid && <span className="badge bg-danger ms-2">!</span>}
-                      <span className="badge bg-primary rounded-pill">{diam.toFixed(2)} km</span>
+                      {a.name}
+                      {a.is_potentially_hazardous_asteroid && (
+                        <span className="badge bg-danger ms-2">!</span>
+                      )}
+                      <span className="badge bg-primary rounded-pill">
+                        {diam.toFixed(2)} km
+                      </span>
                     </li>
                   );
                 })}
               </ul>
             )}
+          </div>
+
+          {/* === Paginação === */}
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <button
+              className="btn btn-sm btn-outline-primary"
+              onClick={() => fetchAsteroids(page - 1)}
+              disabled={!hasPrev || loading}
+            >
+              ← Previous
+            </button>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              onClick={() => fetchAsteroids(page + 1)}
+              disabled={!hasNext || loading}
+            >
+              Next →
+            </button>
           </div>
 
           {selectedAsteroid && destructionData && (
@@ -209,18 +249,19 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
               <p>Damage: ${destructionData.damage.toLocaleString()}</p>
             </div>
           )}
-  
+
+          {/* === Gráfico === */}
           <div className="mt-3" style={{ height: 250 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={filteredAsteroids.slice(0, 10).map(a => {
+                data={filteredAsteroids.map(a => {
                   const diam = (a.estimated_diameter.kilometers.estimated_diameter_min + a.estimated_diameter.kilometers.estimated_diameter_max) / 2;
                   const impactEnergy = computeImpact(diam * 1000, density, velocity, angle).energyMt;
                   return { name: a.name, energy: impactEnergy.toFixed(2) };
                 })}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="name" hide />
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="energy" fill="#8884d8" />
@@ -228,7 +269,8 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
             </ResponsiveContainer>
           </div>
         </div>
-       
+
+        {/* === Mapa === */}
         <div className="col-12 col-lg-8 mb-3" style={{ height: "80vh", minHeight: "400px" }}>
           <MapContainer center={impactPoint || [0, 0]} zoom={2} style={{ height: "100%", width: "100%" }}>
             <TileLayer url={tileUrl} attribution={attribution} />
@@ -243,10 +285,6 @@ export default function AsteroidSimulator({ darkMode }: AsteroidSimulatorProps) 
                   radius={impact.craterDiameterKm * 500}
                   pathOptions={{ color: darkMode ? "#fff" : "black", fillOpacity: 0.2 }}
                 />
-                <LeafletCircle center={pos} radius={impact.radiiOverpressure.p1psi} pathOptions={{ color: "blue", fillOpacity: 0.1 }} />
-                <LeafletCircle center={pos} radius={impact.radiiOverpressure.p3psi} pathOptions={{ color: "green", fillOpacity: 0.15 }} />
-                <LeafletCircle center={pos} radius={impact.radiiOverpressure.p5psi} pathOptions={{ color: "orange", fillOpacity: 0.2 }} />
-                <LeafletCircle center={pos} radius={impact.radiiOverpressure.p20psi} pathOptions={{ color: "red", fillOpacity: 0.25 }} />
               </>
             )}
           </MapContainer>
