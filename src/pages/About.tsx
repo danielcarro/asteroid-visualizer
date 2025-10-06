@@ -34,7 +34,7 @@ function About({ darkMode }: AboutProps) {
 
           <div className="col-6 col-md-3 text-center">
             <img
-              src="https://media.licdn.com/dms/image/v2/D4E03AQEGa6v9zqCrMg/profile-displayphoto-scale_200_200/B4EZjHzO.8GYAw-/0/1755698757360?e=1759363200&v=beta&t=3f-hwK3XAx_-sXbXqHsIlN4tWtkQJ4t3pZG6FYl1Oq8"
+              src="https://i.postimg.cc/RVcRhpvJ/IMG-20250805-134213-926-1.jpg"
               alt="Gabriela"
               className="rounded-circle border border-2 border-success"
               style={{ width: 150, height: 150, objectFit: 'cover' }}
@@ -44,7 +44,7 @@ function About({ darkMode }: AboutProps) {
 
           <div className="col-6 col-md-3 text-center">
             <img
-              src="https://axe.avacursosonline.com.br/ma.jpg"
+              src="https://i.postimg.cc/hj5C8XYj/1000141487-1.jpg"
               alt="Matheus"
               className="rounded-circle border border-2 border-warning"
               style={{ width: 150, height: 150, objectFit: 'cover' }}
@@ -54,14 +54,19 @@ function About({ darkMode }: AboutProps) {
         </div>
    
         <div className="mt-5 d-flex justify-content-center align-items-center gap-3">
-          <div style={{ width: 200, height: 80 }}>
-            <svg width="200" height="80" xmlns="http://www.w3.org/2000/svg">
-              <rect width="200" height="80" fill="#007BFF" />
-              <text x="100" y="50" fontSize="20" fill="#fff" textAnchor="middle" fontFamily="Arial, sans-serif">
-                Generation Code
-              </text>
-            </svg>
-          </div>
+        <div
+  style={{
+    backgroundColor: '#302681',
+    color: 'white',
+    padding: '10px',
+    borderRadius: '10px'
+  }}
+>
+   GenerationCode
+</div>
+  
+           
+    
 
           <div style={{ width: 100, height: 60 }}>
             <svg width="100" height="60" viewBox="0 0 720 504" xmlns="http://www.w3.org/2000/svg">
